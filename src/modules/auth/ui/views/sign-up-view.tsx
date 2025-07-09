@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 
 import { authClient } from "@/lib/auth-client"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { useRouter } from "next/navigation";
 
 import { 
     Form,
@@ -21,7 +21,6 @@ import {
     FormField,
     FormItem,
     FormLabel,
-    FormMessage,
 } from "@/components/ui/form"
 
 
@@ -40,7 +39,7 @@ const FormSchema = z.object(
 );
 
 export const SignUpView = () => {
-    const router = useRouter()
+    const router = useRouter();
     const[error, setError] = useState<string | null>(null)
     const [pending, setPending] = useState(false)
 
@@ -66,12 +65,36 @@ export const SignUpView = () => {
     {
         name: data.name,
         email: data.email,
-        password: data.password
+        password: data.password,
+        callbackURL: "/",
     },
     {
         onSuccess: () => {
-            router.push("/");
             setPending(false);
+            router.push("/");
+        },
+        onError: ({ error }) => {
+            setError(error.message);
+            setPending(false);
+        },
+    }
+    );
+
+    }
+
+    const onSocial =  (provider : "github" | "google") => {
+    setError(null);
+    setPending(true);
+
+    authClient.signIn.social(
+    {
+        provider : provider,
+        callbackURL:"/"
+    },
+    {
+        onSuccess: () => {
+            setPending(false);
+            
         },
         onError: ({ error }) => {
             setError(error.message);
@@ -92,7 +115,7 @@ export const SignUpView = () => {
                     <div className="flex flex-col gap-6">
                         <div className="flex flex-col items-center text-center">
                             <h1 className="text-2xl font-bold">
-                                Let&apos;d get you started
+                                Let&apos;s get you started
                             </h1>
                             <p className="text-muted-foreground text-balance">
                                 Create your Acount
@@ -158,11 +181,19 @@ export const SignUpView = () => {
                             </span>
                         </div>
                         <div className=" grid grid-cols-2 gap-4 ">
-                            <Button disabled={pending} variant="outline" className="w-full">
+                            <Button 
+                                disabled={pending}
+                                onClick={()=>onSocial("google")} 
+                                variant="outline" 
+                                className="w-full">
                                 <img src="/google.svg" alt="" className="h-4 w-4 mr-2" />
                                 Google
                             </Button>
-                            <Button disabled={pending} variant="outline" className="w-full">
+                            <Button 
+                                disabled={pending} 
+                                onClick={()=>onSocial("github")}
+                                variant="outline" 
+                                className="w-full">
                                 <img src="/github.svg" alt="" className="h-4 w-4 mr-2" />
                                 Github
                             </Button>
@@ -178,9 +209,9 @@ export const SignUpView = () => {
                 </form>
                 </Form>
 
-                <div className="bg-radial from-green-700 to-green-900 relative hidden md:flex  flex-col 
+                <div className="bg-radial from-sidebar-accent to-sidebar relative hidden md:flex  flex-col 
                 gap-y-4 items-center justify-center ">
-                    <img src="/logo.svg" alt="" className="h-[92px] w-[92px]" />
+                    <img src="/logo2.svg" alt="" className="h-[92px] w-[92px]" />
                 <p className="text-2xl font-semibold text-white">
                     Voca.AI
                 </p>
